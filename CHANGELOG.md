@@ -6,4 +6,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/shanejonas/metamask-link
+[Unreleased]: https://github.com/shanejonas/metamask-link/compare/0.0.0...HEAD
