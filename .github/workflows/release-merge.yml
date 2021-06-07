@@ -1,4 +1,4 @@
-name: Release Merge
+name: Release Merge Publish
 
 on:
   pull_request:
