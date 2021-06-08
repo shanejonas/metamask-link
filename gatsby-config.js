@@ -2,7 +2,7 @@ module.exports = {
   pathPrefix: '/metamask-link',
   siteMetadata: {
     title: 'MetaMask Link',
-    description: 'This tool lets you link to metamask actions',
+    description: 'This tool lets you link to metamask actions.',
     logoUrl:
       'https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg',
     primaryColor: '#3f51b5', // material-ui primary color
