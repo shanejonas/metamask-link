@@ -1,7 +1,7 @@
 {
     "name": "metamask-link",
     "description": "",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "dependencies": {
         "@apidevtools/json-schema-ref-parser": "^9.0.9",
         "@etclabscore/monaco-add-json-schema-diagnostics": "^1.0.3",
