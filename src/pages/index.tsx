@@ -15,6 +15,8 @@ import _ from "lodash";
 import {
   isMobile
 } from "react-device-detect";
+import MetaMaskOpenRPCDocument from "@metamask/api-specs";
+const $RefParser = require("@apidevtools/json-schema-ref-parser"); //tslint:disable-line
 
 interface RequestArguments {
   readonly method: string;
@@ -40,6 +42,7 @@ const getUrlWithoutSearch = () => {
 }
 
 const MyApp: React.FC = () => {
+  const [openrpcDocument, setOpenrpcDocument] = useState();
   const [queryParams] = useQueryParams();
   const darkMode = useDarkMode();
   const [value, setValue] = useState(() => {
@@ -57,7 +60,9 @@ const MyApp: React.FC = () => {
       setShowInstallDialog(!hasEthereum);
     }
   }, [])
-
+  useEffect(() => {
+    $RefParser.dereference(MetaMaskOpenRPCDocument).then(setOpenrpcDocument);
+  }, [])
   useEffect(() => {
     if (typeof window !== 'undefined' && queryParams && queryParams.method) {
       window.ethereum?.request(queryParams).then(console.log);
@@ -80,6 +85,7 @@ const MyApp: React.FC = () => {
       <Grid container>
         <Grid item xs={6}>
           <CustomEditor
+            openrpcDocument={openrpcDocument}
             value={value}
             onChange={_.debounce((v) => {
               try {

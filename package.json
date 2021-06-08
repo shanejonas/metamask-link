@@ -3,7 +3,7 @@
     "description": "",
     "version": "0.0.6",
     "dependencies": {
-        "@apidevtools/json-schema-ref-parser": "^9.0.7",
+        "@apidevtools/json-schema-ref-parser": "^9.0.9",
         "@etclabscore/monaco-add-json-schema-diagnostics": "^1.0.3",
         "@etclabscore/react-monaco-editor": "1.0.4",
         "@material-ui/core": "4.9.8",
@@ -12,7 +12,7 @@
         "@material-ui/styles": "4.9.6",
         "@mdx-js/mdx": "^1.5.4",
         "@mdx-js/react": "^1.5.4",
-        "@metamask/api-specs": "0.0.26",
+        "@metamask/api-specs": "^0.0.27",
         "@open-rpc/docs-react": "^1.5.0",
         "@open-rpc/inspector": "^1.5.4",
         "@open-rpc/meta-schema": "^1.14.2",
