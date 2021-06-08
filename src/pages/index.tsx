@@ -12,6 +12,9 @@ import QRCode from "react-qr-code";
 import * as monaco from "monaco-editor";
 import CustomEditor from "../components/CustomEditor";
 import _ from "lodash";
+import {
+  isMobile
+} from "react-device-detect";
 
 interface RequestArguments {
   readonly method: string;
@@ -58,6 +61,12 @@ const MyApp: React.FC = () => {
   useEffect(() => {
     if (typeof window !== 'undefined' && queryParams && queryParams.method) {
       window.ethereum?.request(queryParams).then(console.log);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) {
+      window.location.href = `https://metamask.app.link/${window.location.href}`;
     }
   }, []);
 
