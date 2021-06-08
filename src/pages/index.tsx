@@ -66,7 +66,7 @@ const MyApp: React.FC = () => {
 
   useEffect(() => {
     if (isMobile && !window.ethereum) {
-      window.location.href = `https://metamask.app.link/${window.location.href}`;
+      window.location.href = `https://metamask.app.link/dapp/${window.location.href}`;
     }
   }, []);
 
