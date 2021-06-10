@@ -57,7 +57,7 @@ const MyApp: React.FC = () => {
   const qrCodeRef = useRef();
   const darkMode = useDarkMode();
   const [value, setValue] = useState(() => {
-    return JSON.stringify(queryParams, null, 4);
+    return JSON.stringify(queryParams || {}, null, 4);
   });
 
   useEffect(() => {
