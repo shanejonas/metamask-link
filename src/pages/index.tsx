@@ -75,21 +75,23 @@ const MyApp: React.FC = () => {
     if (!svg) {
       return;
     }
-    const data = (new XMLSerializer()).serializeToString(svg);
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    if (!context) {
-      return;
-    }
-    const v = canvg.fromString(context, data);
-    v.start();
-    await v.ready;
-    canvas.toBlob(function (blob) {
-      if (!blob) {
+    setTimeout(async () => {
+      const data = (new XMLSerializer()).serializeToString(svg);
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (!context) {
         return;
       }
-      download(`QRCodeMetaMaskLink-${new Date().toISOString()}.png`, blob);
-    });
+      const v = canvg.fromString(context, data);
+      v.start();
+      await v.ready;
+      canvas.toBlob(function (blob) {
+        if (!blob) {
+          return;
+        }
+        download(`QRCodeMetaMaskLink-${new Date().toISOString()}.png`, blob);
+      });
+    }, 0);
     setTimeout(() => {
       setDownloadQRCode(false);
     }, 1000);
@@ -135,7 +137,7 @@ const MyApp: React.FC = () => {
               <QRCode ref={qrCodeRef as any} value={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })} size={350} />
             </Grid>
             <Grid item style={{ paddingBottom: "50px", marginLeft: "60px" }}>
-              <Button variant="contained" color="primary" onClick={() => downloadQRCode()}>Download QR Image</Button>
+              <Button startIcon={downloadQrCode ? <Check style={{ color: green[500] }} /> : undefined} variant="contained" color="primary" onClick={() => downloadQRCode()}>{downloadQrCode ? "Downloaded QR Image!" : "Download QR Image"}</Button>
             </Grid>
             <Grid>
               <Grid item>
