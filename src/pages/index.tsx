@@ -1,137 +1,159 @@
-import React, { useEffect, useState } from "react";
-import { Grid, Typography, Box, Button, Dialog, DialogTitle, DialogActions, DialogContent, Avatar } from "@material-ui/core";
-import Warning from "@material-ui/icons/Warning";
+import React, { useEffect, useState, useRef } from "react";
+import { Grid, Typography, Button } from "@material-ui/core";
 import useDarkMode from "use-dark-mode";
-import { Link as GatsbyLink } from "gatsby";
 import Link from "@material-ui/core/Link";
-import { grey } from "@material-ui/core/colors";
+import { green, grey } from "@material-ui/core/colors";
 import useQueryParams from "../hooks/useQueryString";
-import { EventEmitter } from "events";
 import * as qs from 'qs';
 import QRCode from "react-qr-code";
 import * as monaco from "monaco-editor";
 import CustomEditor from "../components/CustomEditor";
 import _ from "lodash";
-import {
-  isMobile
-} from "react-device-detect";
 import MetaMaskOpenRPCDocument from "@metamask/api-specs";
+import Layout from "../components/Layout";
+import { useClipboard } from "use-clipboard-copy";
+import { Check } from "@material-ui/icons";
+import canvg from 'canvg';
+
 const $RefParser = require("@apidevtools/json-schema-ref-parser"); //tslint:disable-line
 
-interface RequestArguments {
-  readonly method: string;
-  readonly params?: readonly unknown[] | object;
+const getShortenedUrl = (url: string) => {
+  return url.substring(0, 140) + '[...]' + url.substring(url.length - 140, url.length - 1);
 }
 
-interface EthereumProvider extends EventEmitter {
-  isMetaMask?: boolean;
-  request: (args: RequestArguments) => Promise<unknown>;
-}
-
-declare global {
-  interface Window {
-    ethereum?: EthereumProvider;
+// Initiate download of blob
+function download(
+  filename: string, // string
+  blob: Blob, // Blob
+) {
+  if ((window as any).navigator.msSaveOrOpenBlob) {
+    window.navigator.msSaveBlob(blob, filename);
+  } else {
+    const elem = window.document.createElement('a');
+    elem.href = window.URL.createObjectURL(blob);
+    elem.download = filename;
+    document.body.appendChild(elem);
+    elem.click();
+    document.body.removeChild(elem);
   }
 }
 
-
-const getUrlWithoutSearch = () => {
+const getUrlWithoutSearch = (includeDeep: boolean = true) => {
   if (typeof window !== 'undefined') {
-    return window.location.protocol + '//' + window.location.host + window.location.pathname
+    let url = window.location.protocol + '//' + window.location.host;
+    if (includeDeep) {
+      url = url + '/deep';
+    }
+    return url;
   }
 }
 
 const MyApp: React.FC = () => {
+  const clipboard = useClipboard();
   const [openrpcDocument, setOpenrpcDocument] = useState();
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [downloadQrCode, setDownloadQRCode] = useState(false);
   const [queryParams] = useQueryParams();
+  const qrCodeRef = useRef();
   const darkMode = useDarkMode();
   const [value, setValue] = useState(() => {
     return JSON.stringify(queryParams, null, 4);
   });
-  const [showInstallDialog, setShowInstallDialog] = useState(false);
+
   useEffect(() => {
     const t = darkMode.value ? "vs-dark" : "vs";
     monaco.editor.setTheme(t);
   }, [darkMode.value]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const hasEthereum = window.ethereum && window.ethereum.isMetaMask;
-      setShowInstallDialog(!hasEthereum);
-    }
-  }, [])
-  useEffect(() => {
     $RefParser.dereference(MetaMaskOpenRPCDocument).then(setOpenrpcDocument);
   }, [])
-  useEffect(() => {
-    if (typeof window !== 'undefined' && queryParams && queryParams.method) {
-      window.ethereum?.request(queryParams).then(console.log);
-    }
-  }, []);
 
-  useEffect(() => {
-    if (isMobile && !window.ethereum) {
-      const url = window.location.href;
-      const urlWithoutProtocol = url.replace(/(^\w+:|^)\/\//, '');
-      window.location.href = `https://metamask.app.link/dapp/${urlWithoutProtocol}`;
+  const downloadQRCode = async () => {
+    setDownloadQRCode(true);
+    const svg = document.querySelector('#qr-code svg');
+    if (!svg) {
+      return;
     }
-  }, []);
+    const data = (new XMLSerializer()).serializeToString(svg);
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (!context) {
+      return;
+    }
+    const v = canvg.fromString(context, data);
+    v.start();
+    await v.ready;
+    canvas.toBlob(function (blob) {
+      if (!blob) {
+        return;
+      }
+      download(`QRCodeMetaMaskLink-${new Date().toISOString()}.png`, blob);
+    });
+    setTimeout(() => {
+      setDownloadQRCode(false);
+    }, 1000);
 
-  if (typeof window === 'undefined') {
-    return null;
   }
+  const copyLink = () => {
+    const link = getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })
+    clipboard.copy(link);
+    setLinkCopied(true);
+    setTimeout(() => {
+      setLinkCopied(false);
+    }, 1000);
+  }
+
   return (
-    <>
-      <Grid container>
-        <Grid item xs={6}>
-          <CustomEditor
-            openrpcDocument={openrpcDocument}
-            value={value}
-            onChange={_.debounce((v) => {
-              try {
-                JSON.parse(v);
-                setValue(v);
-                window?.history.pushState('', '', getUrlWithoutSearch() +  '?' + qs.stringify(JSON.parse(v), { encode: false }));
-              } catch (e) {
-                console.error(e);
-              }
-            }, 500)}
-          />
+    <Layout>
+      <Grid container style={{
+        padding: "40px",
+        paddingTop: "15px"
+      }}>
+        <Grid item xs={5} style={{ marginLeft: "30px", paddingBottom: "40px" }}>
+          <Typography variant="h3" gutterBottom>Deep link generator</Typography>
+          <Typography variant="body1">Create deep links for MetaMask confirmations - including adding custom networks, tokens, payment requests, and more. It uses the window.ethereum provider under the hood, <Link href="https://metamask.github.io/api-playground/api-documentation/">Read the api reference docs</Link>.</Typography>
         </Grid>
-        <Grid xs={6} justify="center" alignItems="center">
-          <Grid item style={{padding: "20px"}}>
-            <QRCode value={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })} size={400}/>
+        <Grid container item xs={12}>
+          <Grid item xs={6}>
+            <CustomEditor
+              openrpcDocument={openrpcDocument}
+              value={value}
+              onChange={_.debounce((v) => {
+                try {
+                  JSON.parse(v);
+                  setValue(v);
+                  window?.history.pushState('', '', getUrlWithoutSearch(false) + '?' + qs.stringify(JSON.parse(v), { encode: false }));
+                } catch (e) {
+                  console.error(e);
+                }
+              }, 500)}
+            />
           </Grid>
-          <Grid>
-            <Grid item>Link:</Grid>
-            <Grid item>
-              <a href={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })}>
-                {getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })}
-              </a>
+          <Grid xs={6} justify="center" alignItems="center" style={{ padding: "20px" }}>
+            <Grid item style={{ paddingBottom: "20px" }} id="qr-code">
+              <QRCode ref={qrCodeRef as any} value={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })} size={350} />
+            </Grid>
+            <Grid item style={{ paddingBottom: "50px", marginLeft: "60px" }}>
+              <Button variant="contained" color="primary" onClick={() => downloadQRCode()}>Download QR Image</Button>
+            </Grid>
+            <Grid>
+              <Grid item>
+                <Typography variant="h5">Deep Link</Typography>
+              </Grid>
+              <Grid item style={{ paddingBottom: "20px", maxWidth: "500px" }}>
+                <Link variant="caption" href={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })}>
+                  {getShortenedUrl(getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false }))}
+                </Link>
+              </Grid>
+              <Grid item style={{ paddingBottom: "20px", marginLeft: "60px" }}>
+                <Button startIcon={linkCopied ? <Check style={{ color: green[500] }} /> : undefined} variant="contained" color="primary" onClick={() => copyLink()}>{linkCopied ? "Link Copied!" : "Copy Link"}</Button>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
-      <Dialog open={showInstallDialog} onClose={() => setShowInstallDialog(false)}>
-        <DialogTitle>
-          <div style={{ display: "flex" }}>
-            <div style={{ marginTop: "6px", marginLeft: "6px" }}>
-              <Warning />
-            </div>
-            <Typography variant="h5" style={{ marginTop: "8px", marginLeft: "6px" }}>
-              MetaMask Not Detected
-            </Typography>
-          </div>
-        </DialogTitle>
-        <DialogContent dividers>
-          <Typography>Install MetaMask for your platform and refresh the page.</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => window.location.reload()}>Refresh</Button>
-          <Button startIcon={<Avatar src={"https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg"} style={{ opacity: "0.9", height: "24px", width: "24px" }} />} variant="contained" color="primary" href="https://metamask.io/download.html" target="_blank">Download MetaMask</Button>
-        </DialogActions>
-      </Dialog>
-    </>
+    </Layout>
   );
 };
 

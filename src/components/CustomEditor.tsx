@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import MonacoEditor from "@etclabscore/react-monaco-editor";
 import * as monaco from "monaco-editor";
 import { MethodObject, OpenrpcDocument } from "@open-rpc/meta-schema";
-import useWindowSize from "@rehooks/window-size";
 import { addDiagnostics } from "@etclabscore/monaco-add-json-schema-diagnostics";
 import openrpcDocumentToJSONRPCSchema from "../helpers/openrpcDocumentToJSONRPCSchema";
 import { Grid } from "@material-ui/core";
@@ -16,12 +15,6 @@ interface IProps {
 
 const CustomEditor: React.FC<IProps> = (props) => {
   const [editor, setEditor]: [any, any] = useState();
-  const windowSize = useWindowSize();
-  useEffect(() => {
-    if (editor) {
-      editor.layout();
-    }
-  }, [windowSize, editor]);
 
   useEffect(() => {
     if (!editor) {
@@ -88,7 +81,7 @@ const CustomEditor: React.FC<IProps> = (props) => {
 
   return (
     <MonacoEditor
-      height="93vh"
+      height="500px"
       width="100%"
       value={props.value}
       editorDidMount={handleEditorDidMount}

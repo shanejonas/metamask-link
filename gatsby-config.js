@@ -5,30 +5,14 @@ module.exports = {
     description: 'This tool lets you link to metamask actions.',
     logoUrl:
       'https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg',
-    primaryColor: '#3f51b5', // material-ui primary color
-    secondaryColor: '#f50057', // material-ui secondary color
     author: '',
-    menuLinks: [
-      {
-        name: 'Home',
-        link: '/',
-        ignoreNextPrev: true,
-      },
-    ],
-    footerLinks: [
-      {
-        name: 'MetaMask',
-        link: 'https://metamask.io',
-      },
-    ],
   },
   plugins: [
-    '@xops.net/gatsby-openrpc-theme',
     {
       resolve: 'gatsby-plugin-manifest',
       options: {
-        name: 'api-playground',
-        short_name: 'api-playground',
+        name: 'metamask-link',
+        short_name: 'metamask-link',
         start_url: '/',
         background_color: 'transparent',
         theme_color: '#3f51b5',
