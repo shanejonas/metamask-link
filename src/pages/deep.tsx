@@ -70,7 +70,7 @@ const Deep: React.FC<IProps> = (props) => {
             src={"https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg"} />
         </Grid>
         <Grid item style={{marginBottom: "50px"}}>
-          <Typography variant="h3">View and approve request on Metamask</Typography>
+          <Typography variant="h3">View and approve request on MetaMask</Typography>
         </Grid>
         <Grid item>
           <Link href={window.location.protocol + '//' + window.location.host + window.location.search}>Create your own link</Link>
