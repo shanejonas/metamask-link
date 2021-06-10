@@ -32,6 +32,12 @@ interface IProps {
 
 }
 
+const getCreateLink = () => {
+  if (typeof window !== 'undefined') {
+    return window.location.protocol + '//' + window.location.host + window.location.search;
+  }
+}
+
 const Deep: React.FC<IProps> = (props) => {
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [queryParams] = useQueryParams();
@@ -73,7 +79,7 @@ const Deep: React.FC<IProps> = (props) => {
           <Typography variant="h3">View and approve request on MetaMask</Typography>
         </Grid>
         <Grid item>
-          <Link href={window.location.protocol + '//' + window.location.host + window.location.search}>Create your own link</Link>
+          <Link href={getCreateLink()}>Create your own link</Link>
         </Grid>
       </Grid>
       <Dialog open={showInstallDialog} onClose={() => setShowInstallDialog(false)}>
