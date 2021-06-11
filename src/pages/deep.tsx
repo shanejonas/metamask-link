@@ -7,7 +7,7 @@ import {
   isMobile
 } from "react-device-detect";
 import useQueryParams from "../hooks/useQueryString";
-
+import GatsbyLink from "gatsby-link";
 interface RequestArguments {
   readonly method: string;
   readonly params?: readonly unknown[] | object;
@@ -24,17 +24,13 @@ declare global {
   }
 }
 
-const getShortenedUrl = (url: string) => {
-  return url.substring(0, 140) + '[...]' + url.substring(url.length - 140, url.length - 1);
-}
-
 interface IProps {
 
 }
 
 const getCreateLink = () => {
   if (typeof window !== 'undefined') {
-    return window.location.protocol + '//' + window.location.host + window.location.pathname.split('/')[0] + window.location.search;
+    return window.location.search;
   }
 }
 
@@ -65,7 +61,7 @@ const Deep: React.FC<IProps> = (props) => {
 
   return (
     <Layout>
-      <Grid container justify="center" alignItems="center" direction="column" style={{marginTop: "10%"}}>
+      <Grid container justify="center" alignItems="center" direction="column" style={{ marginTop: "10%" }}>
         <Grid item>
           <img
             alt="logo"
@@ -75,11 +71,15 @@ const Deep: React.FC<IProps> = (props) => {
             }}
             src={"https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg"} />
         </Grid>
-        <Grid item style={{marginBottom: "50px"}}>
+        <Grid item style={{ marginBottom: "50px" }}>
           <Typography variant="h3">View and approve request on MetaMask</Typography>
         </Grid>
         <Grid item>
-          <Link href={getCreateLink()}>Create your own link</Link>
+          <GatsbyLink to={`/${getCreateLink()}`} style={{textDecoration: 'none'}}>
+            <Link>
+              Create your own link
+              </Link>
+          </GatsbyLink>
         </Grid>
       </Grid>
       <Dialog open={showInstallDialog} onClose={() => setShowInstallDialog(false)}>
@@ -101,7 +101,7 @@ const Deep: React.FC<IProps> = (props) => {
           <Button startIcon={<Avatar src={"https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg"} style={{ opacity: "0.9", height: "24px", width: "24px" }} />} variant="contained" color="primary" href="https://metamask.io/download.html" target="_blank">Download MetaMask</Button>
         </DialogActions>
       </Dialog>
-    </Layout>
+    </Layout >
   );
 };
 
