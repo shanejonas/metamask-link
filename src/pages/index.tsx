@@ -10,10 +10,10 @@ import * as monaco from "monaco-editor";
 import CustomEditor from "../components/CustomEditor";
 import _ from "lodash";
 import MetaMaskOpenRPCDocument from "@metamask/api-specs";
-// import Layout from "../components/Layout";
 import { useClipboard } from "use-clipboard-copy";
 import { Check } from "@material-ui/icons";
 import canvg from 'canvg';
+import { GatsbyLink } from "gatsby-material-ui-components";
 
 const $RefParser = require("@apidevtools/json-schema-ref-parser"); //tslint:disable-line
 
@@ -21,7 +21,10 @@ const getShortenedUrlWithQs = (url: string | undefined, newQs: string) => {
   if (!url) {
     return;
   }
-  return url.substring(0, 140) + '[...]' + url.substring(url.length - 140, url.length - 1) + "?" + qs.stringify(JSON.parse(newQs), { encode: false });
+  if (url.length < 140) {
+    return url + "?" + qs.stringify(JSON.parse(newQs), { encode: false });
+  }
+  return url.substring(0, 60) + '[...]' + url.substring(url.length - 60, url.length - 1) + "?" + qs.stringify(JSON.parse(newQs), { encode: false });
 }
 
 // Initiate download of blob
@@ -41,27 +44,30 @@ function download(
   }
 }
 
-const getUrlWithoutSearch = (includeDeep: boolean = true) => {
-  if (typeof window !== 'undefined') {
-    let url = window.location.protocol + '//' + window.location.host + window.location.pathname;
-    if (includeDeep) {
-      url = url + '/deep';
-    }
-    return url;
-  }
+
+interface IProps {
+  location: Location;
 }
 
-const MyApp: React.FC = () => {
+const MyApp: React.FC<IProps> = ({ location }) => {
   const clipboard = useClipboard();
   const [openrpcDocument, setOpenrpcDocument] = useState();
   const [linkCopied, setLinkCopied] = useState(false);
   const [downloadQrCode, setDownloadQRCode] = useState(false);
-  const [queryParams] = useQueryParams();
+  const [queryParams] = useQueryParams(location.search);
   const qrCodeRef = useRef();
   const darkMode = useDarkMode();
   const [value, setValue] = useState(() => {
     return JSON.stringify(queryParams || {}, null, 4);
   });
+
+  const getUrlWithoutSearch = (includeDeep: boolean = true) => {
+    let url = location.protocol + '//' + location.host + location.pathname;
+    if (includeDeep) {
+      url = url + 'deep';
+    }
+    return url;
+  }
 
   useEffect(() => {
     const t = darkMode.value ? "vs-dark" : "vs";
@@ -146,9 +152,9 @@ const MyApp: React.FC = () => {
               <Typography variant="h5">Deep Link</Typography>
             </Grid>
             <Grid item style={{ paddingBottom: "20px", maxWidth: "500px" }}>
-              <Link variant="caption" href={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })}>
+              <GatsbyLink to={'/deep' + location.search}>
                 {getShortenedUrlWithQs(getUrlWithoutSearch(), value)}
-              </Link>
+              </GatsbyLink>
             </Grid>
             <Grid item style={{ paddingBottom: "20px", marginLeft: "60px" }}>
               <Button startIcon={linkCopied ? <Check style={{ color: green[500] }} /> : undefined} variant="contained" color="primary" onClick={() => copyLink()}>{linkCopied ? "Link Copied!" : "Copy Link"}</Button>

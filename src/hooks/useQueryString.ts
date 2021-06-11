@@ -2,12 +2,9 @@
 import { useState } from 'react';
 import * as qs from 'qs';
 
-const useQueryParams = (depth?: number) => {
+const useQueryParams = (search: string, depth?: number) => {
   const parse = (): any => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    return qs.parse(window.location.search, {
+    return qs.parse(search, {
       ignoreQueryPrefix: true,
       depth: depth || 100,
       decoder(str: string) {
