@@ -1,5 +1,5 @@
 module.exports = {
-  // pathPrefix: '/metamask-link',
+  pathPrefix: '/metamask-link',
   siteMetadata: {
     title: 'MetaMask Link',
     description: 'This tool lets you link to metamask actions.',
