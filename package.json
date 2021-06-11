@@ -18,6 +18,7 @@
         "canvg": "^3.0.7",
         "gatsby": "2.32.11",
         "gatsby-plugin-manifest": "^3.7.1",
+        "gatsby-theme-material-ui": "^2.0.1",
         "loader-utils": "2.0.0",
         "lodash": "^4.17.15",
         "monaco-editor": "0.18.1",

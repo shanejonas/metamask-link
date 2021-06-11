@@ -5,6 +5,7 @@ import Brightness3Icon from "@material-ui/icons/Brightness3";
 import WbSunnyIcon from "@material-ui/icons/WbSunny";
 import { useStaticQuery, graphql } from "gatsby";
 import React from "react"
+const ThemeTopLayout = require("gatsby-theme-material-ui-top-layout/src/components/top-layout").default;
 
 const Layout: React.FC = ({ children }) => {
   const darkMode = useDarkMode();
@@ -21,7 +22,7 @@ const Layout: React.FC = ({ children }) => {
     }
   `);
   return (
-    <MuiThemeProvider theme={theme}>
+    <ThemeTopLayout theme={theme}>
       <CssBaseline />
       <AppBar position="static" color="default" elevation={0}>
         <Toolbar>
@@ -53,7 +54,7 @@ const Layout: React.FC = ({ children }) => {
         </Toolbar>
       </AppBar>
       {children}
-    </MuiThemeProvider>
+    </ThemeTopLayout>
   )
 }
 

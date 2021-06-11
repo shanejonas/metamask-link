@@ -79,6 +79,10 @@ const CustomEditor: React.FC<IProps> = (props) => {
     }
   };
 
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
   return (
     <MonacoEditor
       height="500px"

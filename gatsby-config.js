@@ -8,6 +8,7 @@ module.exports = {
     author: '',
   },
   plugins: [
+    'gatsby-theme-material-ui',
     {
       resolve: 'gatsby-plugin-manifest',
       options: {
