@@ -40,7 +40,7 @@ function download(
 
 const getUrlWithoutSearch = (includeDeep: boolean = true) => {
   if (typeof window !== 'undefined') {
-    let url = window.location.protocol + '//' + window.location.host;
+    let url = window.location.protocol + '//' + window.location.host + window.location.pathname;
     if (includeDeep) {
       url = url + '/deep';
     }

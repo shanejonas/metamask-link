@@ -34,7 +34,7 @@ interface IProps {
 
 const getCreateLink = () => {
   if (typeof window !== 'undefined') {
-    return window.location.protocol + '//' + window.location.host + window.location.search;
+    return window.location.protocol + '//' + window.location.host + window.location.pathname.split('/')[0] + window.location.search;
   }
 }
 
