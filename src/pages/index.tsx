@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Grid, Typography, Button } from "@material-ui/core";
+import { Grid, Typography, Button, useTheme } from "@material-ui/core";
 import useDarkMode from "use-dark-mode";
 import Link from "@material-ui/core/Link";
 import { green, grey } from "@material-ui/core/colors";
@@ -13,7 +13,7 @@ import MetaMaskOpenRPCDocument from "@metamask/api-specs";
 import { useClipboard } from "use-clipboard-copy";
 import { Check } from "@material-ui/icons";
 import canvg from 'canvg';
-import { GatsbyLink } from "gatsby-material-ui-components";
+import { Link as GatsbyLink } from "gatsby";
 
 const $RefParser = require("@apidevtools/json-schema-ref-parser"); //tslint:disable-line
 
@@ -51,6 +51,7 @@ interface IProps {
 
 const MyApp: React.FC<IProps> = ({ location }) => {
   const clipboard = useClipboard();
+  const theme = useTheme();
   const [openrpcDocument, setOpenrpcDocument] = useState();
   const [linkCopied, setLinkCopied] = useState(false);
   const [downloadQrCode, setDownloadQRCode] = useState(false);
@@ -62,7 +63,7 @@ const MyApp: React.FC<IProps> = ({ location }) => {
   });
 
   const getUrlWithoutSearch = (includeDeep: boolean = true) => {
-    let url = location.protocol + '//' + location.host + location.pathname;
+    let url = location.host + location.pathname;
     if (includeDeep) {
       url = url + 'deep';
     }
@@ -141,8 +142,8 @@ const MyApp: React.FC<IProps> = ({ location }) => {
           />
         </Grid>
         <Grid xs={6} justify="center" alignItems="center" style={{ padding: "20px" }}>
-          <Grid item style={{ paddingBottom: "20px" }} id="qr-code">
-            <QRCode ref={qrCodeRef as any} value={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })} size={350} />
+          <Grid item style={{ marginBottom: "20px", height: "350px" }} id="qr-code">
+            {typeof window !== 'undefined' && <QRCode ref={qrCodeRef as any} value={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })} size={350} />}
           </Grid>
           <Grid item style={{ paddingBottom: "50px", marginLeft: "60px" }}>
             <Button startIcon={downloadQrCode ? <Check style={{ color: green[500] }} /> : undefined} variant="contained" color="primary" onClick={() => downloadQRCode()}>{downloadQrCode ? "Downloaded QR Image!" : "Download QR Image"}</Button>
@@ -152,9 +153,11 @@ const MyApp: React.FC<IProps> = ({ location }) => {
               <Typography variant="h5">Deep Link</Typography>
             </Grid>
             <Grid item style={{ paddingBottom: "20px", maxWidth: "500px" }}>
-              <GatsbyLink to={'/deep' + location.search}>
-                {getShortenedUrlWithQs(getUrlWithoutSearch(), value)}
-              </GatsbyLink>
+              {typeof window !== 'undefined' &&
+                <GatsbyLink to={'/deep' + location.search} style={{ textDecoration: "none", color: theme.palette.primary.main, fontSize: theme.typography.body1.fontSize }}>
+                  {getShortenedUrlWithQs(getUrlWithoutSearch(), value)}
+                </GatsbyLink>
+              }
             </Grid>
             <Grid item style={{ paddingBottom: "20px", marginLeft: "60px" }}>
               <Button startIcon={linkCopied ? <Check style={{ color: green[500] }} /> : undefined} variant="contained" color="primary" onClick={() => copyLink()}>{linkCopied ? "Link Copied!" : "Copy Link"}</Button>

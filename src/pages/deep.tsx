@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import EventEmitter from "events";
-import { Grid, Typography, Box, Button, Dialog, DialogTitle, DialogActions, DialogContent, Avatar, Link } from "@material-ui/core";
+import { Grid, Typography, Box, Button, Dialog, DialogTitle, DialogActions, DialogContent, Avatar, Link, useTheme } from "@material-ui/core";
 import Warning from "@material-ui/icons/Warning";
 import {
   isMobile
@@ -27,7 +27,8 @@ interface IProps {
   location: Location;
 }
 
-const Deep: React.FC<IProps> = ({location}) => {
+const Deep: React.FC<IProps> = ({ location }) => {
+  const theme = useTheme();
   const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [queryParams] = useQueryParams(location.search);
 
@@ -42,7 +43,7 @@ const Deep: React.FC<IProps> = ({location}) => {
     if (isMobile && !window.ethereum) {
       const url = location.href;
       const urlWithoutProtocol = url.replace(/(^\w+:|^)\/\//, '');
-      window.location.href = `https://metamask.app.link/dapp/${urlWithoutProtocol}`;
+      window.open(`https://metamask.app.link/dapp/${urlWithoutProtocol}`);
     }
   }, []);
 
@@ -68,9 +69,13 @@ const Deep: React.FC<IProps> = ({location}) => {
           <Typography variant="h3">View and approve request on MetaMask</Typography>
         </Grid>
         <Grid item>
-          <GatsbyLink to={`/${location.search}`}>
+          <Link component={(props: { children: any }) => (
+            <GatsbyLink to={"/" + location.search}  style={{ textDecoration: "none", color: theme.palette.primary.main, fontSize: theme.typography.body1.fontSize }}>
+              {props.children}
+            </GatsbyLink>
+          )}>
             Create your own link
-          </GatsbyLink>
+          </Link>
         </Grid>
       </Grid>
       <Dialog open={showInstallDialog} onClose={() => setShowInstallDialog(false)}>
