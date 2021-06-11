@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import EventEmitter from "events";
-import Layout from "../components/Layout";
+// import Layout from "../components/Layout";
 import { Grid, Typography, Box, Button, Dialog, DialogTitle, DialogActions, DialogContent, Avatar, Link } from "@material-ui/core";
 import Warning from "@material-ui/icons/Warning";
 import {
@@ -60,7 +60,7 @@ const Deep: React.FC<IProps> = (props) => {
   }, []);
 
   return (
-    <Layout>
+    <>
       <Grid container justify="center" alignItems="center" direction="column" style={{ marginTop: "10%" }}>
         <Grid item>
           <img
@@ -75,10 +75,8 @@ const Deep: React.FC<IProps> = (props) => {
           <Typography variant="h3">View and approve request on MetaMask</Typography>
         </Grid>
         <Grid item>
-          <GatsbyLink to={`/${getCreateLink()}`} style={{textDecoration: 'none'}}>
-            <Link>
-              Create your own link
-              </Link>
+          <GatsbyLink to={`/${getCreateLink()}`}>
+            Create your own link
           </GatsbyLink>
         </Grid>
       </Grid>
@@ -101,7 +99,7 @@ const Deep: React.FC<IProps> = (props) => {
           <Button startIcon={<Avatar src={"https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg"} style={{ opacity: "0.9", height: "24px", width: "24px" }} />} variant="contained" color="primary" href="https://metamask.io/download.html" target="_blank">Download MetaMask</Button>
         </DialogActions>
       </Dialog>
-    </Layout >
+    </>
   );
 };
 

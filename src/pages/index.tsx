@@ -10,15 +10,18 @@ import * as monaco from "monaco-editor";
 import CustomEditor from "../components/CustomEditor";
 import _ from "lodash";
 import MetaMaskOpenRPCDocument from "@metamask/api-specs";
-import Layout from "../components/Layout";
+// import Layout from "../components/Layout";
 import { useClipboard } from "use-clipboard-copy";
 import { Check } from "@material-ui/icons";
 import canvg from 'canvg';
 
 const $RefParser = require("@apidevtools/json-schema-ref-parser"); //tslint:disable-line
 
-const getShortenedUrl = (url: string) => {
-  return url.substring(0, 140) + '[...]' + url.substring(url.length - 140, url.length - 1);
+const getShortenedUrlWithQs = (url: string | undefined, newQs: string) => {
+  if (!url) {
+    return;
+  }
+  return url.substring(0, 140) + '[...]' + url.substring(url.length - 140, url.length - 1) + "?" + qs.stringify(JSON.parse(newQs), { encode: false });
 }
 
 // Initiate download of blob
@@ -107,55 +110,53 @@ const MyApp: React.FC = () => {
   }
 
   return (
-    <Layout>
-      <Grid container style={{
-        padding: "40px",
-        paddingTop: "15px"
-      }}>
-        <Grid item xs={5} style={{ marginLeft: "30px", paddingBottom: "40px" }}>
-          <Typography variant="h3" gutterBottom>Deep link generator</Typography>
-          <Typography variant="body1">Create deep links for MetaMask confirmations - including adding custom networks, tokens, payment requests, and more. It uses the window.ethereum provider under the hood, <Link href="https://metamask.github.io/api-playground/api-documentation/">Read the api reference docs</Link>.</Typography>
+    <Grid container style={{
+      padding: "40px",
+      paddingTop: "15px"
+    }}>
+      <Grid item xs={5} style={{ marginLeft: "30px", paddingBottom: "40px" }}>
+        <Typography variant="h3" gutterBottom>Deep link generator</Typography>
+        <Typography variant="body1">Create deep links for MetaMask confirmations - including adding custom networks, tokens, payment requests, and more. It uses the window.ethereum provider under the hood, <Link href="https://metamask.github.io/api-playground/api-documentation/">Read the api reference docs</Link>.</Typography>
+      </Grid>
+      <Grid container item xs={12}>
+        <Grid item xs={6}>
+          <CustomEditor
+            openrpcDocument={openrpcDocument}
+            value={value}
+            onChange={_.debounce((v) => {
+              try {
+                JSON.parse(v);
+                setValue(v);
+                window?.history.pushState('', '', getUrlWithoutSearch(false) + '?' + qs.stringify(JSON.parse(v), { encode: false }));
+              } catch (e) {
+                console.error(e);
+              }
+            }, 500)}
+          />
         </Grid>
-        <Grid container item xs={12}>
-          <Grid item xs={6}>
-            <CustomEditor
-              openrpcDocument={openrpcDocument}
-              value={value}
-              onChange={_.debounce((v) => {
-                try {
-                  JSON.parse(v);
-                  setValue(v);
-                  window?.history.pushState('', '', getUrlWithoutSearch(false) + '?' + qs.stringify(JSON.parse(v), { encode: false }));
-                } catch (e) {
-                  console.error(e);
-                }
-              }, 500)}
-            />
+        <Grid xs={6} justify="center" alignItems="center" style={{ padding: "20px" }}>
+          <Grid item style={{ paddingBottom: "20px" }} id="qr-code">
+            <QRCode ref={qrCodeRef as any} value={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })} size={350} />
           </Grid>
-          <Grid xs={6} justify="center" alignItems="center" style={{ padding: "20px" }}>
-            <Grid item style={{ paddingBottom: "20px" }} id="qr-code">
-              <QRCode ref={qrCodeRef as any} value={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })} size={350} />
+          <Grid item style={{ paddingBottom: "50px", marginLeft: "60px" }}>
+            <Button startIcon={downloadQrCode ? <Check style={{ color: green[500] }} /> : undefined} variant="contained" color="primary" onClick={() => downloadQRCode()}>{downloadQrCode ? "Downloaded QR Image!" : "Download QR Image"}</Button>
+          </Grid>
+          <Grid>
+            <Grid item>
+              <Typography variant="h5">Deep Link</Typography>
             </Grid>
-            <Grid item style={{ paddingBottom: "50px", marginLeft: "60px" }}>
-              <Button startIcon={downloadQrCode ? <Check style={{ color: green[500] }} /> : undefined} variant="contained" color="primary" onClick={() => downloadQRCode()}>{downloadQrCode ? "Downloaded QR Image!" : "Download QR Image"}</Button>
+            <Grid item style={{ paddingBottom: "20px", maxWidth: "500px" }}>
+              <Link variant="caption" href={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })}>
+                {getShortenedUrlWithQs(getUrlWithoutSearch(), value)}
+              </Link>
             </Grid>
-            <Grid>
-              <Grid item>
-                <Typography variant="h5">Deep Link</Typography>
-              </Grid>
-              <Grid item style={{ paddingBottom: "20px", maxWidth: "500px" }}>
-                <Link variant="caption" href={getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false })}>
-                  {getShortenedUrl(getUrlWithoutSearch() + '?' + qs.stringify(JSON.parse(value), { encode: false }))}
-                </Link>
-              </Grid>
-              <Grid item style={{ paddingBottom: "20px", marginLeft: "60px" }}>
-                <Button startIcon={linkCopied ? <Check style={{ color: green[500] }} /> : undefined} variant="contained" color="primary" onClick={() => copyLink()}>{linkCopied ? "Link Copied!" : "Copy Link"}</Button>
-              </Grid>
+            <Grid item style={{ paddingBottom: "20px", marginLeft: "60px" }}>
+              <Button startIcon={linkCopied ? <Check style={{ color: green[500] }} /> : undefined} variant="contained" color="primary" onClick={() => copyLink()}>{linkCopied ? "Link Copied!" : "Copy Link"}</Button>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
-    </Layout>
+    </Grid>
   );
 };
 
