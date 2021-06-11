@@ -106,6 +106,10 @@ const MyApp: React.FC = () => {
     }, 1000);
   }
 
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
   return (
     <Layout>
       <Grid container style={{
