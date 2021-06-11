@@ -63,7 +63,7 @@ const MyApp: React.FC<IProps> = ({ location }) => {
   });
 
   const getUrlWithoutSearch = (includeDeep: boolean = true) => {
-    let url = location.host + location.pathname;
+    let url = location.protocol + "//" + location.host + location.pathname;
     if (includeDeep) {
       url = url + 'deep';
     }
