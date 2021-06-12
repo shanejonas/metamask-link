@@ -162,7 +162,7 @@ const MyApp: React.FC<IProps> = ({ location }) => {
     }}>
       <Grid item xs={5} style={{ marginLeft: "30px", paddingBottom: "40px" }}>
         <Typography variant="h3" gutterBottom>Deep link generator</Typography>
-        <Typography variant="body1">Create deep links for MetaMask confirmations - including adding custom networks, tokens, payment requests, and more. It uses the window.ethereum provider under the hood, <Link href="https://metamask.github.io/api-playground/api-documentation/">Read the api reference docs</Link>.</Typography>
+        <Typography variant="body1">Create deep links for MetaMask confirmations - including adding custom networks, tokens, payment requests, and more. It uses the window.ethereum provider under the hood. <Link href="https://metamask.github.io/api-playground/api-documentation/">Read the api reference docs</Link>.</Typography>
       </Grid>
       <Grid container item xs={12}>
         <Grid item xs={6}>
