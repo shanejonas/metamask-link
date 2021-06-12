@@ -24,7 +24,7 @@ const ExamplesDropdown: React.FC<IProps> = ({ onChange, examples }) => {
 
   return (
     <>
-      <Button onClick={handleClick} variant="outlined" disabled={Boolean(anchorEl)} style={{ color: theme.palette.primary.main }}>Examples</Button>
+      <Button onClick={handleClick} variant="outlined" disabled={Boolean(anchorEl)} style={{ color: theme.palette.primary.main, border: 'transparent' }}>Examples</Button>
       <Menu
         id="examples-dropdown"
         anchorEl={anchorEl}
