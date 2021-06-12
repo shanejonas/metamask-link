@@ -43,7 +43,7 @@ const Deep: React.FC<IProps> = ({ location }) => {
     if (isMobile && !window.ethereum) {
       const url = location.href;
       const urlWithoutProtocol = url.replace(/(^\w+:|^)\/\//, '');
-      window.open(`https://metamask.app.link/dapp/${urlWithoutProtocol}`);
+      window.location.href = `https://metamask.app.link/dapp/${urlWithoutProtocol}`;
     }
   }, []);
 
