@@ -14,6 +14,10 @@ import { useClipboard } from "use-clipboard-copy";
 import { Check } from "@material-ui/icons";
 import canvg from 'canvg';
 import { Link as GatsbyLink } from "gatsby";
+import { ExampleObject, ExamplePairingObject, MethodObject, MethodOrReference, OpenrpcDocument } from "@open-rpc/meta-schema";
+import ExamplesDropdown from "../components/ExamplesDropdown";
+
+const exampleMethods = ['wallet_addEthereumChain', 'wallet_watchAsset'];
 
 const $RefParser = require("@apidevtools/json-schema-ref-parser"); //tslint:disable-line
 
@@ -52,7 +56,8 @@ interface IProps {
 const MyApp: React.FC<IProps> = ({ location }) => {
   const clipboard = useClipboard();
   const theme = useTheme();
-  const [openrpcDocument, setOpenrpcDocument] = useState();
+  const [openrpcDocument, setOpenrpcDocument] = useState<OpenrpcDocument>();
+  const [methodExamples, setMethodExamples] = useState([]);
   const [linkCopied, setLinkCopied] = useState(false);
   const [downloadQrCode, setDownloadQRCode] = useState(false);
   const [queryParams] = useQueryParams(location.search);
@@ -78,6 +83,40 @@ const MyApp: React.FC<IProps> = ({ location }) => {
   useEffect(() => {
     $RefParser.dereference(MetaMaskOpenRPCDocument).then(setOpenrpcDocument);
   }, [])
+
+  useEffect(() => {
+    const _methodExamples: any = [];
+    // generate jsonrpc {method, params} examples out of an openrpcdoc
+    openrpcDocument?.methods.filter((_method: MethodOrReference) => {
+      let method = _method as MethodObject;
+      return exampleMethods.includes(method.name);
+    }).forEach((_method: MethodOrReference) => {
+      let method = _method as MethodObject;
+      let exampleParams: any;
+      let emptyParams = [] as any;
+      let examplePosition = 0;
+      let example;
+      type TParamStructure = "either" | "by-name" | "by-position";
+      if (method && method.examples && method.examples[examplePosition]) {
+        example = method.examples[examplePosition] as ExamplePairingObject;
+        const paramStructure: TParamStructure = method.paramStructure || "either";
+        exampleParams = paramStructure === "by-name"
+          ? (example.params as ExampleObject[]).reduce(((memo, p) => {
+            memo[p.name] = p.value;
+            return memo;
+          }), {} as any)
+          : (example.params as ExampleObject[]).map(((p) => p.value));
+      }
+      if (method && method.paramStructure === "by-name") {
+        emptyParams = {};
+      }
+      _methodExamples.push({
+        method: method.name,
+        params: exampleParams || emptyParams,
+      })
+    });
+    setMethodExamples(_methodExamples);
+  }, [openrpcDocument])
 
   const downloadQRCode = async () => {
     setDownloadQRCode(true);
@@ -127,6 +166,11 @@ const MyApp: React.FC<IProps> = ({ location }) => {
       </Grid>
       <Grid container item xs={12}>
         <Grid item xs={6}>
+          <Grid container xs={12} justify="flex-end" style={{marginBottom: "20px"}}>
+            <Grid item>
+              <ExamplesDropdown examples={methodExamples} onChange={(example) => setValue(JSON.stringify(example, null, 4))} />
+            </Grid>
+          </Grid>
           <CustomEditor
             openrpcDocument={openrpcDocument}
             value={value}

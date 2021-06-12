@@ -55,8 +55,18 @@ const paletteOverrides: PaletteOptions  ={
   }
 };
 const overrides: Overrides = {
+  MuiMenuItem: {
+    root: {
+      justifyContent: 'center'
+    }
+  },
   MuiButton: {
       contained: {
+        minWidth: "200px",
+        borderRadius: "35px",
+        boxShadow: "0px 3px 4px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)"
+      },
+      outlined: {
         minWidth: "200px",
         borderRadius: "35px",
         boxShadow: "0px 3px 4px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)"
