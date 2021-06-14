@@ -198,7 +198,7 @@ const MyApp: React.FC<IProps> = ({ location }) => {
             </Grid>
             <Grid item style={{ paddingBottom: "20px", maxWidth: "500px" }}>
               {typeof window !== 'undefined' &&
-                <GatsbyLink to={'/deep' + location.search} style={{ textDecoration: "none", color: theme.palette.primary.main, fontSize: theme.typography.body1.fontSize }}>
+                <GatsbyLink to={'/deep?' + qs.stringify(JSON.parse(value), { encode: false })} style={{ textDecoration: "none", color: theme.palette.primary.main, fontSize: theme.typography.body1.fontSize }}>
                   {getShortenedUrlWithQs(getUrlWithoutSearch(), value)}
                 </GatsbyLink>
               }
